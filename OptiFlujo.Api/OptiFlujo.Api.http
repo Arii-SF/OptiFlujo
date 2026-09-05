@@ -1,0 +1,6 @@
+@OptiFlujo.Api_HostAddress = http://localhost:5007
+
+GET {{OptiFlujo.Api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
