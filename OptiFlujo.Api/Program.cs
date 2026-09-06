@@ -18,7 +18,9 @@ builder.Services.AddScoped<UsuarioService>();
 
 builder.Services.AddCors(opciones =>
     opciones.AddPolicy("Demo", politica =>
-        politica.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod()));
+        politica.SetIsOriginAllowed(_ => true)
+                .AllowAnyHeader()
+                .AllowAnyMethod()));
 
 var claveJwt = builder.Configuration["Jwt:Clave"]
     ?? throw new InvalidOperationException("Falta la clave de firma.");
