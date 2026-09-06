@@ -1,27 +1,38 @@
-using Microsoft.EntityFrameworkCore;
-using OptiFlujo.Api.Data;
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
+using OptiFlujo.Api.Data;
 using OptiFlujo.Api.Services;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// ---------------------------------------------------------------- datos
 var cadena = builder.Configuration.GetConnectionString("OptiFlujo")
     ?? throw new InvalidOperationException("Falta la cadena de conexion.");
 
 builder.Services.AddDbContext<OptiFlujoDbContext>(opciones =>
     opciones.UseMySql(cadena, ServerVersion.AutoDetect(cadena)));
 
+// ------------------------------------------------------------ servicios
 builder.Services.AddScoped<AuthService>();
-
 builder.Services.AddScoped<UsuarioService>();
+builder.Services.AddScoped<PacienteService>();
 
+// ----------------------------------------------------------------- CORS
+// Se declara como politica predeterminada para que tambien se aplique a
+// las peticiones previas de tipo OPTIONS que el navegador envia antes de
+// un POST con contenido JSON. Permitir cualquier origen es aceptable
+// mientras el sistema esta en desarrollo; al entregar debe restringirse
+// al dominio del cliente web.
 builder.Services.AddCors(opciones =>
-    opciones.AddPolicy("Demo", politica =>
+    opciones.AddDefaultPolicy(politica =>
         politica.SetIsOriginAllowed(_ => true)
                 .AllowAnyHeader()
                 .AllowAnyMethod()));
 
+// -------------------------------------------------------------- accesos
 var claveJwt = builder.Configuration["Jwt:Clave"]
     ?? throw new InvalidOperationException("Falta la clave de firma.");
 
@@ -43,31 +54,36 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
 builder.Services.AddAuthorization();
 
-builder.Services.AddScoped<PacienteService>();
-// Add services to the container.
-
+// ---------------------------------------------------------- controlador
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
+
 builder.Services.AddSwaggerGen(opciones =>
 {
-    opciones.AddSecurityDefinition("Bearer", new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+    opciones.SwaggerDoc("v1", new OpenApiInfo
+    {
+        Title = "OptiFlujo",
+        Version = "v1",
+        Description = "Gestion de pacientes y servicios oftalmologicos"
+    });
+
+    opciones.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
         Description = "Escriba: Bearer y luego el token",
         Name = "Authorization",
-        In = Microsoft.OpenApi.Models.ParameterLocation.Header,
-        Type = Microsoft.OpenApi.Models.SecuritySchemeType.ApiKey,
+        In = ParameterLocation.Header,
+        Type = SecuritySchemeType.ApiKey,
         Scheme = "Bearer"
     });
 
-    opciones.AddSecurityRequirement(new Microsoft.OpenApi.Models.OpenApiSecurityRequirement
+    opciones.AddSecurityRequirement(new OpenApiSecurityRequirement
     {
         {
-            new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+            new OpenApiSecurityScheme
             {
-                Reference = new Microsoft.OpenApi.Models.OpenApiReference
+                Reference = new OpenApiReference
                 {
-                    Type = Microsoft.OpenApi.Models.ReferenceType.SecurityScheme,
+                    Type = ReferenceType.SecurityScheme,
                     Id = "Bearer"
                 }
             },
@@ -75,17 +91,20 @@ builder.Services.AddSwaggerGen(opciones =>
         }
     });
 });
+
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+// -------------------------------------------------------------- tuberia
+// El orden es significativo. CORS debe resolverse antes que la
+// autenticacion, de lo contrario las peticiones previas se rechazan por
+// falta de credenciales antes de recibir la cabecera de permiso.
+app.UseCors();
 
-    app.UseSwagger();
-    app.UseSwaggerUI();
+app.UseSwagger();
+app.UseSwaggerUI();
 
-
-//app.UseHttpsRedirection();
-
-app.UseCors("Demo");
+// La redireccion a HTTPS se omite porque la plataforma de despliegue la
+// resuelve antes de entregar la peticion al contenedor.
 
 app.UseAuthentication();
 app.UseAuthorization();
