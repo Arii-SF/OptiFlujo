@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { listarPacientes } from "../api/pacientes";
 import type { PacienteLista } from "../api/tipos";
 import MarcaVigencia from "../components/MarcaVigencia";
+import FormularioPaciente from "../components/FormularioPaciente";
 
 interface Props {
   alAbrirExpediente: (id: number) => void;
@@ -12,6 +13,7 @@ export default function Pacientes({ alAbrirExpediente }: Props) {
   const [busqueda, setBusqueda] = useState("");
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [registrando, setRegistrando] = useState(false);
 
   async function buscar(termino: string) {
     setCargando(true);
@@ -24,10 +26,6 @@ export default function Pacientes({ alAbrirExpediente }: Props) {
       setCargando(false);
     }
   }
-
-  useEffect(() => {
-    buscar("");
-  }, []);
 
   // Espera breve antes de consultar, para no llamar a la API en cada tecla
   useEffect(() => {
@@ -46,14 +44,35 @@ export default function Pacientes({ alAbrirExpediente }: Props) {
         Busque por nombre o documento para abrir el expediente.
       </p>
 
-      <input
-        type="text"
-        value={busqueda}
-        onChange={(e) => setBusqueda(e.target.value)}
-        placeholder="Nombre o DPI"
-        className="w-full max-w-md rounded-md border border-stone-300 px-3 py-2 mb-6
-                   focus:outline-none focus:ring-2 focus:ring-teal-600"
-      />
+      <div className="flex items-center justify-between gap-4 mb-6">
+        <input
+          type="text"
+          value={busqueda}
+          onChange={(e) => setBusqueda(e.target.value)}
+          placeholder="Nombre o DPI"
+          className="w-full max-w-md rounded-md border border-stone-300 px-3 py-2
+                     focus:outline-none focus:ring-2 focus:ring-teal-600"
+        />
+        {!registrando && (
+          <button
+            onClick={() => setRegistrando(true)}
+            className="shrink-0 rounded-md bg-teal-700 px-4 py-2 text-sm font-semibold text-white
+                       hover:bg-teal-800"
+          >
+            Nuevo paciente
+          </button>
+        )}
+      </div>
+
+      {registrando && (
+        <FormularioPaciente
+          alGuardar={() => {
+            setRegistrando(false);
+            buscar(busqueda);
+          }}
+          alCancelar={() => setRegistrando(false)}
+        />
+      )}
 
       {error && (
         <div className="rounded-md bg-red-50 px-3 py-2 text-sm text-red-700 mb-4">{error}</div>

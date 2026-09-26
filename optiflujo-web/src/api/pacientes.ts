@@ -1,5 +1,5 @@
 import { pedir } from "./client";
-import type { PacienteLista, Expediente } from "./tipos";
+import type { PacienteLista, Expediente, NuevoPaciente} from "./tipos";
 
 export function listarPacientes(busqueda?: string) {
   const ruta = busqueda?.trim()
@@ -16,6 +16,13 @@ import type { NuevaReceta, Receta } from "./tipos";
 
 export function crearReceta(datos: NuevaReceta) {
   return pedir<Receta>("/api/recetas", {
+    method: "POST",
+    body: JSON.stringify(datos),
+  });
+}
+
+export function crearPaciente(datos: NuevoPaciente) {
+  return pedir<PacienteLista>("/api/pacientes", {
     method: "POST",
     body: JSON.stringify(datos),
   });
