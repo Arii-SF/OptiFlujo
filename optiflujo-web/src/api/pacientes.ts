@@ -11,3 +11,12 @@ export function listarPacientes(busqueda?: string) {
 export function obtenerExpediente(id: number) {
   return pedir<Expediente>(`/api/pacientes/${id}`);
 }
+
+import type { NuevaReceta, Receta } from "./tipos";
+
+export function crearReceta(datos: NuevaReceta) {
+  return pedir<Receta>("/api/recetas", {
+    method: "POST",
+    body: JSON.stringify(datos),
+  });
+}

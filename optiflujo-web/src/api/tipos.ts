@@ -48,3 +48,16 @@ export interface Expediente {
   antecedentesOculares: string | null;
   historial: Receta[];
 }
+
+export interface NuevaReceta {
+  idPaciente: number;
+  odEsfera: number | null;
+  odCilindro: number | null;
+  odEje: number | null;
+  odAdicion: number | null;
+  oiEsfera: number | null;
+  oiCilindro: number | null;
+  oiEje: number | null;
+  oiAdicion: number | null;
+  observaciones: string | null;
+}

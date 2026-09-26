@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { obtenerExpediente } from "../api/pacientes";
 import type { Expediente as Datos } from "../api/tipos";
 import MarcaVigencia from "../components/MarcaVigencia";
+import FormularioReceta from "../components/FormularioReceta";
 
 interface Props {
   idPaciente: number;
@@ -11,12 +12,15 @@ interface Props {
 export default function Expediente({ idPaciente, alVolver }: Props) {
   const [datos, setDatos] = useState<Datos | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [registrando, setRegistrando] = useState(false);
 
-  useEffect(() => {
+  function cargar() {
     obtenerExpediente(idPaciente)
       .then(setDatos)
       .catch((e) => setError(e instanceof Error ? e.message : "No se pudo consultar."));
-  }, [idPaciente]);
+  }
+
+  useEffect(cargar, [idPaciente]);
 
   const fecha = (f: string) =>
     new Date(f + "T00:00:00").toLocaleDateString("es-GT",
@@ -43,9 +47,31 @@ export default function Expediente({ idPaciente, alVolver }: Props) {
         {datos.distanciaInterpupilar && ` · DIP ${datos.distanciaInterpupilar} mm`}
       </p>
 
-      <h3 className="text-base font-semibold text-slate-800 mb-3">
-        Historial de graduaciones
-      </h3>
+      <div className="flex items-center justify-between mb-3">
+        <h3 className="text-base font-semibold text-slate-800">
+          Historial de graduaciones
+        </h3>
+        {!registrando && (
+          <button
+            onClick={() => setRegistrando(true)}
+            className="rounded-md bg-teal-700 px-3 py-1.5 text-sm font-semibold text-white
+                       hover:bg-teal-800"
+          >
+            Nueva graduacion
+          </button>
+        )}
+      </div>
+
+      {registrando && (
+        <FormularioReceta
+          idPaciente={idPaciente}
+          alGuardar={() => {
+            setRegistrando(false);
+            cargar();
+          }}
+          alCancelar={() => setRegistrando(false)}
+        />
+      )}
 
       <div className="rounded-lg border border-stone-200 bg-white overflow-hidden">
         {datos.historial.length === 0 ? (
