@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using OptiFlujo.Api.DTOs;
 using OptiFlujo.Api.Services;
 
 namespace OptiFlujo.Api.Controllers;
@@ -25,5 +26,16 @@ public class PacientesController : ControllerBase
     {
         var expediente = await _servicio.ObtenerExpedienteAsync(id);
         return expediente is null ? NotFound() : Ok(expediente);
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> Crear([FromBody] CrearPacienteRequest peticion)
+    {
+        var (paciente, error) = await _servicio.CrearAsync(peticion);
+
+        return error is not null
+            ? BadRequest(new { mensaje = error })
+            : CreatedAtAction(nameof(Expediente),
+                new { id = paciente!.IdPaciente }, paciente);
     }
 }

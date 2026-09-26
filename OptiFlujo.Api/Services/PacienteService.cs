@@ -208,4 +208,46 @@ public class PacienteService
             RegistradaPor = autor
         }, null);
     }
+
+    /// <summary>RF-05: alta de paciente.</summary>
+    public async Task<(PacienteListaDto? paciente, string? error)> CrearAsync(
+        CrearPacienteRequest peticion)
+    {
+        var nombre = peticion.NombreCompleto.Trim();
+
+        if (nombre.Length < 3)
+            return (null, "El nombre no es valido.");
+
+        var dpi = string.IsNullOrWhiteSpace(peticion.Dpi) ? null : peticion.Dpi.Trim();
+
+        // El documento es opcional, pero no puede repetirse entre pacientes
+        if (dpi is not null && await _contexto.Pacientes.AnyAsync(p => p.Dpi == dpi))
+            return (null, "Ya existe un paciente registrado con ese documento.");
+
+        var paciente = new Models.Paciente
+        {
+            NombreCompleto = nombre,
+            Dpi = dpi,
+            FechaNacimiento = peticion.FechaNacimiento,
+            Telefono = string.IsNullOrWhiteSpace(peticion.Telefono) ? null : peticion.Telefono.Trim(),
+            Correo = string.IsNullOrWhiteSpace(peticion.Correo) ? null : peticion.Correo.Trim(),
+            DistanciaInterpupilar = peticion.DistanciaInterpupilar,
+            AntecedentesOculares = string.IsNullOrWhiteSpace(peticion.AntecedentesOculares)
+                ? null : peticion.AntecedentesOculares.Trim(),
+            Activo = true
+        };
+
+        _contexto.Pacientes.Add(paciente);
+        await _contexto.SaveChangesAsync();
+
+        return (new PacienteListaDto
+        {
+            IdPaciente = paciente.IdPaciente,
+            NombreCompleto = paciente.NombreCompleto,
+            Dpi = paciente.Dpi,
+            Telefono = paciente.Telefono,
+            UltimaReceta = null,
+            EstadoVigencia = "SIN_RECETA"
+        }, null);
+    }
 }
