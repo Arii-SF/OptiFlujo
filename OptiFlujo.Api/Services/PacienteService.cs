@@ -137,4 +137,75 @@ public class PacienteService
                 .ToList()
         };
     }
+
+    /// <summary>
+    /// RF-09. La fecha de vencimiento se calcula sumando a la emision los
+    /// meses definidos en la configuracion, conforme a RN-01.
+    /// </summary>
+    public async Task<(RecetaDto? receta, string? error)> CrearRecetaAsync(
+        CrearRecetaRequest peticion, int idUsuario)
+    {
+        var paciente = await _contexto.Pacientes
+            .FirstOrDefaultAsync(p => p.IdPaciente == peticion.IdPaciente);
+
+        if (paciente is null)
+            return (null, "El paciente indicado no existe.");
+
+        if (peticion.OdEsfera is null && peticion.OiEsfera is null)
+            return (null, "Debe registrar la graduacion de al menos un ojo.");
+
+        var vigenciaTexto = await _contexto.Configuraciones
+            .Where(c => c.Clave == "receta_vigencia_meses")
+            .Select(c => c.Valor)
+            .FirstOrDefaultAsync();
+
+        var meses = int.TryParse(vigenciaTexto, out var m) ? m : 12;
+
+        var hoy = DateOnly.FromDateTime(DateTime.Today);
+
+        var receta = new Models.RecetaMedica
+        {
+            IdPaciente = peticion.IdPaciente,
+            IdUsuario = idUsuario,
+            OdEsfera = peticion.OdEsfera,
+            OdCilindro = peticion.OdCilindro,
+            OdEje = peticion.OdEje,
+            OdAdicion = peticion.OdAdicion,
+            OiEsfera = peticion.OiEsfera,
+            OiCilindro = peticion.OiCilindro,
+            OiEje = peticion.OiEje,
+            OiAdicion = peticion.OiAdicion,
+            FechaEmision = hoy,
+            FechaVencimiento = hoy.AddMonths(meses),
+            Observaciones = peticion.Observaciones
+        };
+
+        _contexto.Recetas.Add(receta);
+        await _contexto.SaveChangesAsync();
+
+        var umbral = await UmbralAlertaAsync();
+        var autor = await _contexto.Usuarios
+            .Where(u => u.IdUsuario == idUsuario)
+            .Select(u => u.Nombre)
+            .FirstOrDefaultAsync() ?? "—";
+
+        return (new RecetaDto
+        {
+            IdReceta = receta.IdReceta,
+            OdEsfera = receta.OdEsfera,
+            OdCilindro = receta.OdCilindro,
+            OdEje = receta.OdEje,
+            OdAdicion = receta.OdAdicion,
+            OiEsfera = receta.OiEsfera,
+            OiCilindro = receta.OiCilindro,
+            OiEje = receta.OiEje,
+            OiAdicion = receta.OiAdicion,
+            FechaEmision = receta.FechaEmision,
+            FechaVencimiento = receta.FechaVencimiento,
+            DiasParaVencer = receta.DiasParaVencer(hoy),
+            EstadoVigencia = Clasificar(receta.FechaVencimiento, hoy, umbral),
+            Observaciones = receta.Observaciones,
+            RegistradaPor = autor
+        }, null);
+    }
 }
