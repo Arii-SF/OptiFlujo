@@ -1,9 +1,5 @@
 {
   "$schema": "https://railway.app/railway.schema.json",
-  "build": {
-    "builder": "RAILPACK",
-    "buildCommand": "cd optiflujo-web && npm ci && npm run build && cd .. && rm -rf OptiFlujo.Api/wwwroot && mkdir -p OptiFlujo.Api/wwwroot && cp -r optiflujo-web/dist/* OptiFlujo.Api/wwwroot/ && dotnet publish OptiFlujo.Api/OptiFlujo.Api.csproj -c Release -o /app/publish"
-  },
   "deploy": {
     "startCommand": "dotnet /app/publish/OptiFlujo.Api.dll"
   }
