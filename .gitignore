@@ -6,4 +6,3 @@ appsettings.Development.json
 node_modules/
 dist/
 .env
-OptiFlujo.Api/wwwroot/
