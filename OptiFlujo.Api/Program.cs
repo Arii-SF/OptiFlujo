@@ -100,6 +100,9 @@ var app = builder.Build();
 // falta de credenciales antes de recibir la cabecera de permiso.
 app.UseCors();
 
+app.UseDefaultFiles();
+app.UseStaticFiles();
+
 app.UseSwagger();
 app.UseSwaggerUI();
 
@@ -111,6 +114,6 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-app.MapGet("/", () => Results.Redirect("/swagger"));
+app.MapFallbackToFile("index.html");
 
 app.Run();

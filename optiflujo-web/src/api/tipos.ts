@@ -61,3 +61,13 @@ export interface NuevaReceta {
   oiAdicion: number | null;
   observaciones: string | null;
 }
+
+export interface NuevoPaciente {
+  nombreCompleto: string;
+  dpi: string | null;
+  fechaNacimiento: string | null;
+  telefono: string | null;
+  correo: string | null;
+  distanciaInterpupilar: number | null;
+  antecedentesOculares: string | null;
+} 
