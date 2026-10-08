@@ -2,11 +2,15 @@ import { useState } from "react";
 import Login from "./pages/Login";
 import Pacientes from "./pages/Pacientes";
 import Expediente from "./pages/Expediente";
+import Alertas from "./pages/Alertas";
 import { guardarToken } from "./api/client";
 import type { Sesion } from "./api/tipos";
 
+type Seccion = "pacientes" | "alertas";
+
 export default function App() {
   const [sesion, setSesion] = useState<Sesion | null>(null);
+  const [seccion, setSeccion] = useState<Seccion>("pacientes");
   const [expediente, setExpediente] = useState<number | null>(null);
 
   if (!sesion) return <Login alEntrar={setSesion} />;
@@ -15,7 +19,26 @@ export default function App() {
     guardarToken(null);
     setSesion(null);
     setExpediente(null);
+    setSeccion("pacientes");
   }
+
+  function ir(destino: Seccion) {
+    setSeccion(destino);
+    setExpediente(null);
+  }
+
+  const pestania = (destino: Seccion, etiqueta: string) => (
+    <button
+      onClick={() => ir(destino)}
+      className={`border-b-2 px-4 py-3 text-sm ${
+        seccion === destino
+          ? "border-teal-700 font-semibold text-teal-700"
+          : "border-transparent text-stone-500 hover:text-slate-800"
+      }`}
+    >
+      {etiqueta}
+    </button>
+  );
 
   return (
     <div className="min-h-screen bg-stone-50">
@@ -33,8 +56,15 @@ export default function App() {
         </div>
       </header>
 
+      <nav className="flex gap-1 border-b border-stone-200 bg-white px-6">
+        {pestania("pacientes", "Pacientes")}
+        {pestania("alertas", "Alertas")}
+      </nav>
+
       <main className="mx-auto max-w-5xl px-6 py-8">
-        {expediente === null ? (
+        {seccion === "alertas" ? (
+          <Alertas />
+        ) : expediente === null ? (
           <Pacientes alAbrirExpediente={setExpediente} />
         ) : (
           <Expediente idPaciente={expediente} alVolver={() => setExpediente(null)} />

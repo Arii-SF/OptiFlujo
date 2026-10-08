@@ -14,6 +14,7 @@ public class OptiFlujoDbContext : DbContext
     public DbSet<Paciente> Pacientes => Set<Paciente>();
     public DbSet<RecetaMedica> Recetas => Set<RecetaMedica>();
     public DbSet<Configuracion> Configuraciones => Set<Configuracion>();
+    public DbSet<AlertaReceta> Alertas => Set<AlertaReceta>();
     protected override void OnModelCreating(ModelBuilder modelo)
     {
         modelo.Entity<Usuario>(e =>
@@ -86,6 +87,21 @@ public class OptiFlujoDbContext : DbContext
             e.Property(x => x.Descripcion).HasColumnName("descripcion").HasMaxLength(255);
             e.Property(x => x.TipoDato).HasColumnName("tipo_dato");
             e.Property(x => x.FechaModificacion).HasColumnName("fecha_modificacion");
+        });
+
+        // Proyeccion de solo lectura sobre la vista definida en el esquema
+        modelo.Entity<AlertaReceta>(e =>
+        {
+            e.HasNoKey();
+            e.ToView("v_alertas_recetas");
+            e.Property(x => x.IdPaciente).HasColumnName("id_paciente");
+            e.Property(x => x.NombreCompleto).HasColumnName("nombre_completo");
+            e.Property(x => x.Telefono).HasColumnName("telefono");
+            e.Property(x => x.IdReceta).HasColumnName("id_receta");
+            e.Property(x => x.FechaEmision).HasColumnName("fecha_emision");
+            e.Property(x => x.FechaVencimiento).HasColumnName("fecha_vencimiento");
+            e.Property(x => x.DiasRestantes).HasColumnName("dias_restantes");
+            e.Property(x => x.EstadoVigencia).HasColumnName("estado_vigencia");
         });
     }
 }

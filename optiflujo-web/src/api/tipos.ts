@@ -71,3 +71,14 @@ export interface NuevoPaciente {
   distanciaInterpupilar: number | null;
   antecedentesOculares: string | null;
 } 
+
+export interface Alerta {
+  idPaciente: number;
+  nombreCompleto: string;
+  telefono: string | null;
+  idReceta: number;
+  fechaEmision: string;
+  fechaVencimiento: string;
+  diasRestantes: number;
+  estadoVigencia: Vigencia;
+}
