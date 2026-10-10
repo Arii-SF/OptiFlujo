@@ -112,3 +112,27 @@ export interface GuardarProducto {
   stockMinimo: number;
   bajoPedido: boolean;
 }
+
+export interface LineaCarrito {
+  idProducto: number;
+  nombre: string;
+  precio: number;
+  cantidad: number;
+  stockActual: number;
+  bajoPedido: boolean;
+}
+
+export interface LineaVenta {
+  producto: string;
+  cantidad: number;
+  precioUnitario: number;
+  subtotal: number;
+}
+
+export interface Venta {
+  idVenta: number;
+  paciente: string;
+  fechaVenta: string;
+  total: number;
+  lineas: LineaVenta[];
+}

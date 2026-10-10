@@ -17,6 +17,8 @@ public class OptiFlujoDbContext : DbContext
     public DbSet<AlertaReceta> Alertas => Set<AlertaReceta>();
     public DbSet<Categoria> Categorias => Set<Categoria>();
     public DbSet<Producto> Productos => Set<Producto>();
+    public DbSet<Venta> Ventas => Set<Venta>();
+    public DbSet<DetalleVenta> DetallesVenta => Set<DetalleVenta>();
     protected override void OnModelCreating(ModelBuilder modelo)
     {
         modelo.Entity<Usuario>(e =>
@@ -133,6 +135,36 @@ public class OptiFlujoDbContext : DbContext
             e.HasOne(x => x.Categoria)
              .WithMany()
              .HasForeignKey(x => x.IdCategoria);
+        });
+
+        modelo.Entity<Venta>(e =>
+        {
+            e.ToTable("ventas");
+            e.HasKey(x => x.IdVenta);
+            e.Property(x => x.IdVenta).HasColumnName("id_venta");
+            e.Property(x => x.IdPaciente).HasColumnName("id_paciente");
+            e.Property(x => x.IdUsuario).HasColumnName("id_usuario");
+            e.Property(x => x.FechaVenta).HasColumnName("fecha_venta");
+            e.Property(x => x.Subtotal).HasColumnName("subtotal").HasPrecision(10, 2);
+            e.Property(x => x.Total).HasColumnName("total").HasPrecision(10, 2);
+
+            e.HasOne(x => x.Paciente).WithMany().HasForeignKey(x => x.IdPaciente);
+            e.HasMany(x => x.Detalles).WithOne().HasForeignKey(x => x.IdVenta);
+        });
+
+        modelo.Entity<DetalleVenta>(e =>
+        {
+            e.ToTable("detalle_ventas");
+            e.HasKey(x => x.IdDetalle);
+            e.Property(x => x.IdDetalle).HasColumnName("id_detalle");
+            e.Property(x => x.IdVenta).HasColumnName("id_venta");
+            e.Property(x => x.IdProducto).HasColumnName("id_producto");
+            e.Property(x => x.IdReceta).HasColumnName("id_receta");
+            e.Property(x => x.Cantidad).HasColumnName("cantidad");
+            e.Property(x => x.PrecioUnitario).HasColumnName("precio_unitario").HasPrecision(10, 2);
+            e.Property(x => x.Subtotal).HasColumnName("subtotal").HasPrecision(10, 2);
+
+            e.HasOne(x => x.Producto).WithMany().HasForeignKey(x => x.IdProducto);
         });
     }
 }
