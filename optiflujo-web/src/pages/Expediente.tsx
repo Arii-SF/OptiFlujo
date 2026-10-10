@@ -28,7 +28,7 @@ export default function Expediente({ idPaciente, alVolver }: Props) {
     new Date(f + "T00:00:00").toLocaleDateString("es-GT",
       { day: "2-digit", month: "short", year: "numeric" });
 
-  // Notacion habitual de la prescripcion: esfera / cilindro x eje
+  // Notación habitual de la prescripción: esfera / cilindro x eje
   const ojo = (esf: number | null, cil: number | null, eje: number | null) =>
     esf === null && cil === null ? "—"
       : `${esf ?? "—"} / ${cil ?? "—"} × ${eje ?? "—"}`;
@@ -49,8 +49,8 @@ export default function Expediente({ idPaciente, alVolver }: Props) {
         <div>
           <h2 className="text-2xl font-semibold text-slate-800">{datos.nombreCompleto}</h2>
           <p className="text-stone-500 text-sm">
-            {datos.edad !== null && `${datos.edad} anios · `}
-            {datos.dpi ?? "sin documento"} · {datos.telefono ?? "sin telefono"}
+            {datos.edad !== null && `${datos.edad} años · `}
+            {datos.dpi ?? "sin documento"} · {datos.telefono ?? "sin teléfono"}
             {datos.distanciaInterpupilar && ` · DIP ${datos.distanciaInterpupilar} mm`}
           </p>
         </div>
@@ -93,7 +93,7 @@ export default function Expediente({ idPaciente, alVolver }: Props) {
             className="rounded-md bg-teal-700 px-3 py-1.5 text-sm font-semibold text-white
                        hover:bg-teal-800"
           >
-            Nueva graduacion
+            Nueva graduación
           </button>
         )}
       </div>
@@ -112,13 +112,13 @@ export default function Expediente({ idPaciente, alVolver }: Props) {
       <div className="rounded-lg border border-stone-200 bg-white overflow-hidden">
         {datos.historial.length === 0 ? (
           <p className="p-8 text-center text-stone-500 text-sm">
-            Este paciente aun no tiene prescripciones registradas.
+            Este paciente aún no tiene prescripciones registradas.
           </p>
         ) : (
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-stone-200 text-left text-stone-500">
-                <th className="px-4 py-2 font-semibold">Emision</th>
+                <th className="px-4 py-2 font-semibold">Emisión</th>
                 <th className="px-4 py-2 font-semibold">Ojo derecho</th>
                 <th className="px-4 py-2 font-semibold">Ojo izquierdo</th>
                 <th className="px-4 py-2 font-semibold">Vence</th>
@@ -153,7 +153,7 @@ export default function Expediente({ idPaciente, alVolver }: Props) {
       <div className="rounded-lg border border-stone-200 bg-white overflow-hidden">
         {datos.compras.length === 0 ? (
           <p className="p-8 text-center text-stone-500 text-sm">
-            Este paciente aun no tiene transacciones registradas.
+            Este paciente aún no tiene transacciones registradas.
           </p>
         ) : (
           datos.compras.map((c) => (
@@ -182,7 +182,7 @@ export default function Expediente({ idPaciente, alVolver }: Props) {
                   ))}
                 </tbody>
               </table>
-              <p className="text-xs text-stone-400 mt-2">Atendio {c.atendidoPor}</p>
+              <p className="text-xs text-stone-400 mt-2">Atendió {c.atendidoPor}</p>
             </div>
           ))
         )}

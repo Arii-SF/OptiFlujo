@@ -35,10 +35,10 @@ export default function Login({ alEntrar }: Props) {
   return (
     <div className="min-h-screen grid place-items-center bg-stone-50 px-6">
       <form onSubmit={entrar} className="w-full max-w-sm">
-        {/* La marca escalona su tamano a la manera de una cartilla optometrica */}
+        {/* La marca escalona su tamaño a la manera de una cartilla optométrica */}
         <div className="text-center mb-10 leading-none">
           <div className="text-6xl font-bold tracking-tight text-slate-800">OptiFlujo</div>
-          <div className="text-3xl font-bold text-teal-700 mt-1">Gestion optica</div>
+          <div className="text-3xl font-bold text-teal-700 mt-1">Gestión óptica</div>
           <div className="text-sm text-stone-500 mt-4">
             Pacientes, prescripciones y punto de venta
           </div>

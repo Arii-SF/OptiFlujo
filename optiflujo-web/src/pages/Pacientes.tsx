@@ -83,7 +83,7 @@ export default function Pacientes({ alAbrirExpediente }: Props) {
           <p className="p-8 text-center text-stone-500 text-sm">Consultando…</p>
         ) : lista.length === 0 ? (
           <p className="p-8 text-center text-stone-500 text-sm">
-            Ningun paciente coincide con la busqueda.
+            Ningún paciente coincide con la búsqueda.
           </p>
         ) : (
           <table className="w-full text-sm">
@@ -91,8 +91,8 @@ export default function Pacientes({ alAbrirExpediente }: Props) {
               <tr className="border-b border-stone-200 text-left text-stone-500">
                 <th className="px-4 py-2 font-semibold">Nombre</th>
                 <th className="px-4 py-2 font-semibold">DPI</th>
-                <th className="px-4 py-2 font-semibold">Telefono</th>
-                <th className="px-4 py-2 font-semibold">Ultima receta</th>
+                <th className="px-4 py-2 font-semibold">Teléfono</th>
+                <th className="px-4 py-2 font-semibold">Última receta</th>
                 <th className="px-4 py-2 font-semibold">Vigencia</th>
                 <th></th>
               </tr>

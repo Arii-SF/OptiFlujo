@@ -97,7 +97,7 @@ export default function FormularioPaciente({ paciente, alGuardar, alCancelar }: 
         </div>
         {entrada("dpi", "DPI", "text", { maxLength: 13 })}
         {entrada("fechaNacimiento", "Fecha de nacimiento", "date")}
-        {entrada("telefono", "Telefono", "text", { maxLength: 15 })}
+        {entrada("telefono", "Teléfono", "text", { maxLength: 15 })}
         {entrada("correo", "Correo", "email")}
         {entrada("distanciaInterpupilar", "Distancia interpupilar (mm)", "number",
           { step: "0.5", min: 40, max: 80 })}

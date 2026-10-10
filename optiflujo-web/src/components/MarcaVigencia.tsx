@@ -9,7 +9,7 @@ const ESTILOS: Record<Vigencia, string> = {
 
 const TEXTOS: Record<Vigencia, string> = {
   VIGENTE: "vigente",
-  PROXIMA_A_VENCER: "proxima a vencer",
+  PROXIMA_A_VENCER: "próxima a vencer",
   VENCIDA: "vencida",
   SIN_RECETA: "sin receta",
 };

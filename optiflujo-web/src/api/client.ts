@@ -23,11 +23,18 @@ export async function pedir<T>(ruta: string, opciones: RequestInit = {}): Promis
 
   const respuesta = await fetch(BASE + ruta, { ...opciones, headers: cabeceras });
 
-  if (respuesta.status === 401) throw new Error("La sesion no es valida.");
+  if (respuesta.status === 401) throw new Error("La sesión no es válida.");
   if (respuesta.status === 403) throw new Error("Su rol no tiene acceso.");
 
   const cuerpo = respuesta.status === 204 ? null : await respuesta.json().catch(() => null);
-  if (!respuesta.ok) throw new Error(cuerpo?.mensaje ?? `Error ${respuesta.status}`);
+
+  if (!respuesta.ok) {
+    // Las validaciones del modelo llegan agrupadas por campo
+    const detalle = cuerpo?.errors
+      ? Object.values(cuerpo.errors).flat().join(" ")
+      : cuerpo?.mensaje;
+    throw new Error(detalle ?? `Error ${respuesta.status}`);
+  }
 
   return cuerpo as T;
 }
