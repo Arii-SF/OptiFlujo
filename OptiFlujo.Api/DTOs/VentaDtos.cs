@@ -31,3 +31,11 @@ public class VentaDto
     public decimal Total { get; set; }
     public List<LineaVentaDto> Lineas { get; set; } = new();
 }
+public class VentaResumenDto
+{
+    public int IdVenta { get; set; }
+    public DateTime FechaVenta { get; set; }
+    public decimal Total { get; set; }
+    public string AtendidoPor { get; set; } = string.Empty;
+    public List<LineaVentaDto> Lineas { get; set; } = new();
+}

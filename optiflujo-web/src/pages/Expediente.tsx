@@ -31,6 +31,9 @@ export default function Expediente({ idPaciente, alVolver }: Props) {
     esf === null && cil === null ? "—"
       : `${esf ?? "—"} / ${cil ?? "—"} × ${eje ?? "—"}`;
 
+  const moneda = (v: number) =>
+    `Q ${v.toLocaleString("es-GT", { minimumFractionDigits: 2 })}`;
+
   if (error) return <div className="rounded-md bg-red-50 px-3 py-2 text-sm text-red-700">{error}</div>;
   if (!datos) return <p className="text-stone-500 text-sm">Consultando…</p>;
 
@@ -108,6 +111,47 @@ export default function Expediente({ idPaciente, alVolver }: Props) {
             </tbody>
           </table>
         )}
+              <h3 className="text-base font-semibold text-slate-800 mt-8 mb-3">
+        Historial de compras
+      </h3>
+
+      <div className="rounded-lg border border-stone-200 bg-white overflow-hidden">
+        {datos.compras.length === 0 ? (
+          <p className="p-8 text-center text-stone-500 text-sm">
+            Este paciente aun no tiene transacciones registradas.
+          </p>
+        ) : (
+          datos.compras.map((c) => (
+            <div key={c.idVenta} className="border-b border-stone-100 p-5 last:border-0">
+              <div className="flex items-baseline justify-between mb-3">
+                <span className="text-slate-800 font-semibold">
+                  {new Date(c.fechaVenta).toLocaleDateString("es-GT",
+                    { day: "2-digit", month: "short", year: "numeric" })}
+                </span>
+                <span className="text-slate-800 font-semibold tabular-nums">
+                  {moneda(c.total)}
+                </span>
+              </div>
+              <table className="w-full text-sm">
+                <tbody>
+                  {c.lineas.map((l, i) => (
+                    <tr key={i}>
+                      <td className="py-1 text-stone-600">{l.producto}</td>
+                      <td className="py-1 text-right text-stone-500 tabular-nums">
+                        {l.cantidad} × {moneda(l.precioUnitario)}
+                      </td>
+                      <td className="py-1 text-right text-stone-700 tabular-nums w-28">
+                        {moneda(l.subtotal)}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+              <p className="text-xs text-stone-400 mt-2">Atendio {c.atendidoPor}</p>
+            </div>
+          ))
+        )}
+      </div>
       </div>
     </div>
   );

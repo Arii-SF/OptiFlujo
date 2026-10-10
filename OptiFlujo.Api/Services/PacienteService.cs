@@ -95,6 +95,13 @@ public class PacienteService
 
         var nombres = await _contexto.Usuarios
             .ToDictionaryAsync(u => u.IdUsuario, u => u.Nombre);
+        // Transacciones del paciente, de la mas reciente a la mas antigua
+        var ventas = await _contexto.Ventas
+            .AsNoTracking()
+            .Include(v => v.Detalles).ThenInclude(d => d.Producto)
+            .Where(v => v.IdPaciente == id)
+            .OrderByDescending(v => v.FechaVenta)
+            .ToListAsync();
 
         int? edad = null;
         if (paciente.FechaNacimiento is not null)
@@ -134,7 +141,22 @@ public class PacienteService
                     Observaciones = r.Observaciones,
                     RegistradaPor = nombres.GetValueOrDefault(r.IdUsuario, "—")
                 })
-                .ToList()
+                .ToList(),
+
+            Compras = ventas.Select(v => new VentaResumenDto
+            {
+                IdVenta = v.IdVenta,
+                FechaVenta = v.FechaVenta,
+                Total = v.Total,
+                AtendidoPor = nombres.GetValueOrDefault(v.IdUsuario, "—"),
+                Lineas = v.Detalles.Select(d => new LineaVentaDto
+                {
+                    Producto = d.Producto?.Nombre ?? "—",
+                    Cantidad = d.Cantidad,
+                    PrecioUnitario = d.PrecioUnitario,
+                    Subtotal = d.Subtotal
+                }).ToList()
+            }).ToList()
         };
     }
 

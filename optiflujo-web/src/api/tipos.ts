@@ -47,6 +47,7 @@ export interface Expediente {
   distanciaInterpupilar: number | null;
   antecedentesOculares: string | null;
   historial: Receta[];
+  compras: VentaResumen[];
 }
 
 export interface NuevaReceta {
@@ -134,5 +135,13 @@ export interface Venta {
   paciente: string;
   fechaVenta: string;
   total: number;
+  lineas: LineaVenta[];
+}
+
+export interface VentaResumen {
+  idVenta: number;
+  fechaVenta: string;
+  total: number;
+  atendidoPor: string;
   lineas: LineaVenta[];
 }

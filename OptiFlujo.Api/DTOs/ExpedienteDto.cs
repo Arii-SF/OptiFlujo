@@ -12,4 +12,5 @@ public class ExpedienteDto
     public decimal? DistanciaInterpupilar { get; set; }
     public string? AntecedentesOculares { get; set; }
     public List<RecetaDto> Historial { get; set; } = new();
+    public List<VentaResumenDto> Compras { get; set; } = new();
 }
