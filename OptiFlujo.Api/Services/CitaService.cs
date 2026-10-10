@@ -2,6 +2,7 @@
 using OptiFlujo.Api.Data;
 using OptiFlujo.Api.DTOs;
 using OptiFlujo.Api.Models;
+using System.Globalization;
 
 namespace OptiFlujo.Api.Services;
 
@@ -56,6 +57,9 @@ public class CitaService
         var paciente = await _contexto.Pacientes
             .FirstOrDefaultAsync(p => p.IdPaciente == peticion.IdPaciente);
 
+        var fueraDeHorario = await FueraDeHorarioAsync(peticion.FechaHora);
+        if (fueraDeHorario is not null) return (null, fueraDeHorario);
+
         if (paciente is null) return (null, "El paciente indicado no existe.");
 
         if (peticion.FechaHora < DateTime.Now.AddMinutes(-5))
@@ -90,6 +94,9 @@ public class CitaService
             .Include(c => c.Paciente)
             .FirstOrDefaultAsync(c => c.IdCita == id);
 
+        var fueraDeHorario = await FueraDeHorarioAsync(peticion.FechaHora);
+        if (fueraDeHorario is not null) return (null, fueraDeHorario);
+
         if (cita is null) return (null, "La cita no existe.");
 
         if (cita.Estado is not ("PROGRAMADA" or "CONFIRMADA"))
@@ -117,6 +124,41 @@ public class CitaService
 
         cita.Estado = estado;
         await _contexto.SaveChangesAsync();
+        return null;
+    }
+
+    /// <summary>
+    /// RNF-12: la cita debe caer dentro del horario de atencion. Los horarios
+    /// se leen de la configuracion, de modo que un establecimiento con otra
+    /// jornada no requiere modificar el codigo.
+    /// </summary>
+    private async Task<string?> FueraDeHorarioAsync(DateTime fechaHora)
+    {
+        var config = await _contexto.Configuraciones
+            .Where(c => c.Clave.StartsWith("horario_") || c.Clave == "atiende_domingo")
+            .ToDictionaryAsync(c => c.Clave, c => c.Valor);
+
+        string Valor(string clave, string porDefecto)
+            => config.TryGetValue(clave, out var v) ? v : porDefecto;
+
+        static TimeOnly Hora(string texto) =>
+            TimeOnly.TryParse(texto, CultureInfo.InvariantCulture, out var t)
+                ? t : new TimeOnly(9, 0);
+
+        var dia = fechaHora.DayOfWeek;
+
+        if (dia == DayOfWeek.Sunday && Valor("atiende_domingo", "false") != "true")
+            return "El establecimiento no atiende los domingos.";
+
+        var esSabado = dia == DayOfWeek.Saturday;
+        var apertura = Hora(Valor(esSabado ? "horario_apertura_sabado" : "horario_apertura_semana", "09:00"));
+        var cierre = Hora(Valor(esSabado ? "horario_cierre_sabado" : "horario_cierre_semana", "18:00"));
+
+        var hora = TimeOnly.FromDateTime(fechaHora);
+
+        if (hora < apertura || hora >= cierre)
+            return $"Ese dia el horario de atencion es de {apertura:HH\\:mm} a {cierre:HH\\:mm}.";
+
         return null;
     }
 }

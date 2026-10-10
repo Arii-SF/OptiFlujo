@@ -8,9 +8,9 @@ import type { Sesion } from "./api/tipos";
 import Inventario from "./pages/Inventario";
 import PuntoVenta from "./pages/PuntoVenta";
 import Agenda from "./pages/Agenda";
+import Usuarios from "./pages/Usuarios";
 
-type Seccion = "pacientes" | "agenda" | "alertas" | "inventario" | "venta";
-
+type Seccion = "pacientes" | "agenda" | "alertas" | "inventario" | "venta" | "usuarios";
 
 export default function App() {
   const [sesion, setSesion] = useState<Sesion | null>(null);
@@ -66,10 +66,13 @@ export default function App() {
         {pestania("inventario", "Inventario")}
         {pestania("venta", "Punto de venta")}
         {pestania("agenda", "Agenda")}
+        {sesion.rol === "ADMINISTRADOR" && pestania("usuarios", "Usuarios")}
       </nav>
 
       <main className="mx-auto max-w-5xl px-6 py-8">
-        {seccion === "agenda" ? (
+        {seccion === "usuarios" ? (
+  <Usuarios idUsuarioActual={sesion.idUsuario} />
+        ) : seccion === "agenda" ? (
         <Agenda />
         ) : seccion === "venta" ? (
         <PuntoVenta />

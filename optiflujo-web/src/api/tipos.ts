@@ -167,3 +167,18 @@ export interface GuardarCita {
   tipoAtencion: string;
   notas: string | null;
 }
+export interface Usuario {
+  idUsuario: number;
+  nombre: string;
+  correo: string;
+  rol: "ADMINISTRADOR" | "OPTOMETRISTA" | "VENDEDOR";
+  activo: boolean;
+  fechaRegistro: string;
+}
+
+export interface CrearUsuario {
+  nombre: string;
+  correo: string;
+  contrasenia: string;
+  rol: string;
+}
