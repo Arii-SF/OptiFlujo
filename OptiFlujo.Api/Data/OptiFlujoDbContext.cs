@@ -19,6 +19,7 @@ public class OptiFlujoDbContext : DbContext
     public DbSet<Producto> Productos => Set<Producto>();
     public DbSet<Venta> Ventas => Set<Venta>();
     public DbSet<DetalleVenta> DetallesVenta => Set<DetalleVenta>();
+    public DbSet<Cita> Citas => Set<Cita>();
     protected override void OnModelCreating(ModelBuilder modelo)
     {
         modelo.Entity<Usuario>(e =>
@@ -165,6 +166,21 @@ public class OptiFlujoDbContext : DbContext
             e.Property(x => x.Subtotal).HasColumnName("subtotal").HasPrecision(10, 2);
 
             e.HasOne(x => x.Producto).WithMany().HasForeignKey(x => x.IdProducto);
+        });
+
+        modelo.Entity<Cita>(e =>
+        {
+            e.ToTable("citas");
+            e.HasKey(x => x.IdCita);
+            e.Property(x => x.IdCita).HasColumnName("id_cita");
+            e.Property(x => x.IdPaciente).HasColumnName("id_paciente");
+            e.Property(x => x.IdUsuario).HasColumnName("id_usuario");
+            e.Property(x => x.FechaHora).HasColumnName("fecha_hora");
+            e.Property(x => x.TipoAtencion).HasColumnName("tipo_atencion").HasMaxLength(50);
+            e.Property(x => x.Estado).HasColumnName("estado").HasMaxLength(30);
+            e.Property(x => x.Notas).HasColumnName("notas");
+            e.Property(x => x.FechaRegistro).HasColumnName("fecha_registro");
+            e.HasOne(x => x.Paciente).WithMany().HasForeignKey(x => x.IdPaciente);
         });
     }
 }

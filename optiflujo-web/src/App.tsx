@@ -7,8 +7,9 @@ import { guardarToken } from "./api/client";
 import type { Sesion } from "./api/tipos";
 import Inventario from "./pages/Inventario";
 import PuntoVenta from "./pages/PuntoVenta";
+import Agenda from "./pages/Agenda";
 
-type Seccion = "pacientes" | "alertas" | "inventario" | "venta";
+type Seccion = "pacientes" | "agenda" | "alertas" | "inventario" | "venta";
 
 
 export default function App() {
@@ -64,14 +65,17 @@ export default function App() {
         {pestania("alertas", "Alertas")}
         {pestania("inventario", "Inventario")}
         {pestania("venta", "Punto de venta")}
+        {pestania("agenda", "Agenda")}
       </nav>
 
       <main className="mx-auto max-w-5xl px-6 py-8">
-        {seccion === "venta" ? (
-  <PuntoVenta />
-) : seccion === "inventario" ? (
-  <Inventario sesion={sesion} />
-) : seccion === "alertas" ? (
+        {seccion === "agenda" ? (
+        <Agenda />
+        ) : seccion === "venta" ? (
+        <PuntoVenta />
+        ) : seccion === "inventario" ? (
+        <Inventario sesion={sesion} />
+        ) : seccion === "alertas" ? (
           <Alertas />
         ) : expediente === null ? (
           <Pacientes alAbrirExpediente={setExpediente} />

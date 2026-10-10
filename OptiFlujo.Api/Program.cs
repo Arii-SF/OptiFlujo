@@ -21,6 +21,7 @@ builder.Services.AddScoped<UsuarioService>();
 builder.Services.AddScoped<PacienteService>();
 builder.Services.AddScoped<InventarioService>();
 builder.Services.AddScoped<VentaService>();
+builder.Services.AddScoped<CitaService>();
 
 // ----------------------------------------------------------------- CORS
 // Se declara como politica predeterminada para que tambien se aplique a

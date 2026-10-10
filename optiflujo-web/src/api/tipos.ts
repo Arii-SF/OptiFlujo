@@ -145,3 +145,25 @@ export interface VentaResumen {
   atendidoPor: string;
   lineas: LineaVenta[];
 }
+
+export type EstadoCita =
+  | "PROGRAMADA" | "CONFIRMADA" | "EN_ATENCION" | "ATENDIDA"
+  | "CANCELADA_PACIENTE" | "CANCELADA_ESTABLECIMIENTO" | "AUSENTE";
+
+export interface Cita {
+  idCita: number;
+  idPaciente: number;
+  paciente: string;
+  telefono: string | null;
+  fechaHora: string;
+  tipoAtencion: string;
+  estado: EstadoCita;
+  notas: string | null;
+}
+
+export interface GuardarCita {
+  idPaciente: number;
+  fechaHora: string;
+  tipoAtencion: string;
+  notas: string | null;
+}
