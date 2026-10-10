@@ -272,4 +272,40 @@ public class PacienteService
             EstadoVigencia = "SIN_RECETA"
         }, null);
     }
+
+    /// <summary>
+    /// RF-08: actualizacion de los datos del paciente. Se reutiliza el DTO del
+    /// alta porque los campos admitidos son los mismos.
+    /// </summary>
+    public async Task<string?> ActualizarAsync(int id, CrearPacienteRequest peticion)
+    {
+        var paciente = await _contexto.Pacientes
+            .FirstOrDefaultAsync(p => p.IdPaciente == id);
+
+        if (paciente is null) return "El paciente no existe.";
+
+        var nombre = peticion.NombreCompleto.Trim();
+        if (nombre.Length < 3) return "El nombre no es valido.";
+
+        var dpi = string.IsNullOrWhiteSpace(peticion.Dpi) ? null : peticion.Dpi.Trim();
+
+        // El documento sigue siendo unico, excluyendo al propio paciente
+        if (dpi is not null &&
+            await _contexto.Pacientes.AnyAsync(p => p.Dpi == dpi && p.IdPaciente != id))
+            return "Ya existe otro paciente registrado con ese documento.";
+
+        paciente.NombreCompleto = nombre;
+        paciente.Dpi = dpi;
+        paciente.FechaNacimiento = peticion.FechaNacimiento;
+        paciente.Telefono = string.IsNullOrWhiteSpace(peticion.Telefono)
+            ? null : peticion.Telefono.Trim();
+        paciente.Correo = string.IsNullOrWhiteSpace(peticion.Correo)
+            ? null : peticion.Correo.Trim();
+        paciente.DistanciaInterpupilar = peticion.DistanciaInterpupilar;
+        paciente.AntecedentesOculares = string.IsNullOrWhiteSpace(peticion.AntecedentesOculares)
+            ? null : peticion.AntecedentesOculares.Trim();
+
+        await _contexto.SaveChangesAsync();
+        return null;
+    }
 }

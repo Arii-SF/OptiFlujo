@@ -1,19 +1,24 @@
 import { useState } from "react";
-import { crearPaciente } from "../api/pacientes";
-import type { NuevoPaciente } from "../api/tipos";
+import { crearPaciente, actualizarPaciente } from "../api/pacientes";
+import type { NuevoPaciente, Expediente } from "../api/tipos";
 
 interface Props {
+  paciente?: Expediente | null;
   alGuardar: () => void;
   alCancelar: () => void;
 }
 
-const VACIO = {
-  nombreCompleto: "", dpi: "", fechaNacimiento: "",
-  telefono: "", correo: "", distanciaInterpupilar: "", antecedentesOculares: "",
-};
-
-export default function FormularioPaciente({ alGuardar, alCancelar }: Props) {
-  const [campos, setCampos] = useState(VACIO);
+export default function FormularioPaciente({ paciente, alGuardar, alCancelar }: Props) {
+  const [campos, setCampos] = useState({
+    nombreCompleto: paciente?.nombreCompleto ?? "",
+    dpi: paciente?.dpi ?? "",
+    fechaNacimiento: paciente?.fechaNacimiento ?? "",
+    telefono: paciente?.telefono ?? "",
+    correo: paciente?.correo ?? "",
+    distanciaInterpupilar: paciente?.distanciaInterpupilar
+      ? String(paciente.distanciaInterpupilar) : "",
+    antecedentesOculares: paciente?.antecedentesOculares ?? "",
+  });
   const [error, setError] = useState<string | null>(null);
   const [guardando, setGuardando] = useState(false);
 
@@ -39,17 +44,18 @@ export default function FormularioPaciente({ alGuardar, alCancelar }: Props) {
     };
 
     try {
-      await crearPaciente(datos);
+      if (paciente) await actualizarPaciente(paciente.idPaciente, datos);
+      else await crearPaciente(datos);
       alGuardar();
     } catch (e) {
-      setError(e instanceof Error ? e.message : "No se pudo registrar.");
+      setError(e instanceof Error ? e.message : "No se pudo guardar.");
     } finally {
       setGuardando(false);
     }
   }
 
   const entrada = (
-    nombre: keyof typeof VACIO,
+    nombre: keyof typeof campos,
     etiqueta: string,
     tipo = "text",
     extra: Record<string, unknown> = {}
@@ -69,7 +75,9 @@ export default function FormularioPaciente({ alGuardar, alCancelar }: Props) {
 
   return (
     <form onSubmit={enviar} className="rounded-lg border border-stone-200 bg-white p-5 mb-6">
-      <h3 className="text-base font-semibold text-slate-800 mb-4">Nuevo paciente</h3>
+      <h3 className="text-base font-semibold text-slate-800 mb-4">
+        {paciente ? "Editar paciente" : "Nuevo paciente"}
+      </h3>
 
       {error && (
         <div className="mb-4 rounded-md bg-red-50 px-3 py-2 text-sm text-red-700">{error}</div>
@@ -111,7 +119,7 @@ export default function FormularioPaciente({ alGuardar, alCancelar }: Props) {
           className="rounded-md bg-teal-700 px-4 py-2 text-sm font-semibold text-white
                      hover:bg-teal-800 disabled:opacity-50"
         >
-          {guardando ? "Guardando…" : "Registrar"}
+          {guardando ? "Guardando…" : "Guardar"}
         </button>
         <button
           type="button"

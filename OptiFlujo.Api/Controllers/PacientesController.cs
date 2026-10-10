@@ -38,4 +38,11 @@ public class PacientesController : ControllerBase
             : CreatedAtAction(nameof(Expediente),
                 new { id = paciente!.IdPaciente }, paciente);
     }
+
+    [HttpPut("{id:int}")]
+    public async Task<IActionResult> Actualizar(int id, [FromBody] CrearPacienteRequest peticion)
+    {
+        var error = await _servicio.ActualizarAsync(id, peticion);
+        return error is not null ? BadRequest(new { mensaje = error }) : NoContent();
+    }
 }

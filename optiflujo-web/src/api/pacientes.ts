@@ -27,3 +27,10 @@ export function crearPaciente(datos: NuevoPaciente) {
     body: JSON.stringify(datos),
   });
 }
+
+export function actualizarPaciente(id: number, datos: NuevoPaciente) {
+  return pedir<null>(`/api/pacientes/${id}`, {
+    method: "PUT",
+    body: JSON.stringify(datos),
+  });
+}

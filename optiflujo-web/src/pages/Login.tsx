@@ -59,7 +59,7 @@ export default function Login({ alEntrar }: Props) {
                      focus:outline-none focus:ring-2 focus:ring-teal-600"
         />
 
-        <label className="block text-sm text-stone-600 mb-1">Contrasenia</label>
+        <label className="block text-sm text-stone-600 mb-1">Contraseña</label>
         <input
           type="password"
           value={contrasenia}
