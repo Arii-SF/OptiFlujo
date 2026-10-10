@@ -5,8 +5,10 @@ import Expediente from "./pages/Expediente";
 import Alertas from "./pages/Alertas";
 import { guardarToken } from "./api/client";
 import type { Sesion } from "./api/tipos";
+import Inventario from "./pages/Inventario";
 
-type Seccion = "pacientes" | "alertas";
+
+type Seccion = "pacientes" | "alertas" | "inventario";
 
 export default function App() {
   const [sesion, setSesion] = useState<Sesion | null>(null);
@@ -59,10 +61,13 @@ export default function App() {
       <nav className="flex gap-1 border-b border-stone-200 bg-white px-6">
         {pestania("pacientes", "Pacientes")}
         {pestania("alertas", "Alertas")}
+        {pestania("inventario", "Inventario")}
       </nav>
 
       <main className="mx-auto max-w-5xl px-6 py-8">
-        {seccion === "alertas" ? (
+        {seccion === "inventario" ? (
+  <Inventario sesion={sesion} />
+) : seccion === "alertas" ? (
           <Alertas />
         ) : expediente === null ? (
           <Pacientes alAbrirExpediente={setExpediente} />

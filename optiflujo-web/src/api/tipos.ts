@@ -82,3 +82,33 @@ export interface Alerta {
   diasRestantes: number;
   estadoVigencia: Vigencia;
 }
+
+export interface Categoria {
+  idCategoria: number;
+  nombre: string;
+  descripcion: string | null;
+  activo: boolean;
+}
+
+export interface Producto {
+  idProducto: number;
+  nombre: string;
+  idCategoria: number;
+  categoria: string;
+  descripcion: string | null;
+  precio: number;
+  stockActual: number;
+  stockMinimo: number;
+  bajoPedido: boolean;
+  requiereReorden: boolean;
+}
+
+export interface GuardarProducto {
+  nombre: string;
+  idCategoria: number;
+  descripcion: string | null;
+  precio: number;
+  stockActual: number;
+  stockMinimo: number;
+  bajoPedido: boolean;
+}

@@ -15,6 +15,8 @@ public class OptiFlujoDbContext : DbContext
     public DbSet<RecetaMedica> Recetas => Set<RecetaMedica>();
     public DbSet<Configuracion> Configuraciones => Set<Configuracion>();
     public DbSet<AlertaReceta> Alertas => Set<AlertaReceta>();
+    public DbSet<Categoria> Categorias => Set<Categoria>();
+    public DbSet<Producto> Productos => Set<Producto>();
     protected override void OnModelCreating(ModelBuilder modelo)
     {
         modelo.Entity<Usuario>(e =>
@@ -102,6 +104,35 @@ public class OptiFlujoDbContext : DbContext
             e.Property(x => x.FechaVencimiento).HasColumnName("fecha_vencimiento");
             e.Property(x => x.DiasRestantes).HasColumnName("dias_restantes");
             e.Property(x => x.EstadoVigencia).HasColumnName("estado_vigencia");
+        });
+
+        modelo.Entity<Categoria>(e =>
+        {
+            e.ToTable("categorias");
+            e.HasKey(x => x.IdCategoria);
+            e.Property(x => x.IdCategoria).HasColumnName("id_categoria");
+            e.Property(x => x.Nombre).HasColumnName("nombre").HasMaxLength(50);
+            e.Property(x => x.Descripcion).HasColumnName("descripcion").HasMaxLength(255);
+            e.Property(x => x.Activo).HasColumnName("activo");
+        });
+
+        modelo.Entity<Producto>(e =>
+        {
+            e.ToTable("productos");
+            e.HasKey(x => x.IdProducto);
+            e.Property(x => x.IdProducto).HasColumnName("id_producto");
+            e.Property(x => x.Nombre).HasColumnName("nombre").HasMaxLength(150);
+            e.Property(x => x.IdCategoria).HasColumnName("id_categoria");
+            e.Property(x => x.Descripcion).HasColumnName("descripcion");
+            e.Property(x => x.Precio).HasColumnName("precio").HasPrecision(10, 2);
+            e.Property(x => x.StockActual).HasColumnName("stock_actual");
+            e.Property(x => x.StockMinimo).HasColumnName("stock_minimo");
+            e.Property(x => x.BajoPedido).HasColumnName("bajo_pedido");
+            e.Property(x => x.Activo).HasColumnName("activo");
+
+            e.HasOne(x => x.Categoria)
+             .WithMany()
+             .HasForeignKey(x => x.IdCategoria);
         });
     }
 }
